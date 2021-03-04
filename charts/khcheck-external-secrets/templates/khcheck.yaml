@@ -1,0 +1,40 @@
+apiVersion: comcast.github.io/v1
+kind: KuberhealthyCheck
+metadata:
+  # the name of this check and the checker pod
+  name: {{ include "khcheck-external-secrets.fullname" . }}
+spec:
+  runInterval: {{ .Values.runInterval }}
+  timeout: {{ .Values.timeout }}
+  podSpec:
+    serviceAccountName: kuberhealthy-external-secrets-sa
+    {{- with .Values.imagePullSecrets }}
+    imagePullSecrets:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    securityContext:
+      {{- toYaml .Values.podSecurityContext | nindent 6 }}
+    containers:
+      - volumeMounts:
+          - name: manifest-volume
+            mountPath: "{{ .Values.externalSecretTemplatePath }}"
+            subPath: "externalSecretTemplate"
+        env:
+          - name: REPORT_FAILURE
+            value: "{{ .Values.reportFailure }}"
+          - name: REPORT_DELAY
+            value: "{{ .Values.reportDelay }}"
+          {{- if .Values.extraEnvs }}
+            {{- toYaml .Values.extraEnvs | nindent 10 }}
+          {{- end }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 10 }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: {{ .Chart.Name }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+    volumes:
+      - name: manifest-volume
+        configMap:
+          name: {{ include "khcheck-external-secrets.fullname" . }}-cm

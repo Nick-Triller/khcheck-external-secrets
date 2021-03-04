@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "khcheck-external-secrets.fullname" . }}-cm
+data:
+  externalSecretTemplate: |
+    {{ .Values.externalSecretTemplate | nindent 4 }}

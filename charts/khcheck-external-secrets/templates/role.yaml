@@ -1,0 +1,11 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "khcheck-external-secrets.fullname" . }}-role
+rules:
+  - apiGroups: ["kubernetes-client.io"]
+    resources: ["externalsecrets"]
+    verbs: ["create", "delete"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "delete"]

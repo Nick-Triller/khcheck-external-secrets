@@ -1,0 +1,70 @@
+image:
+  repository: docker.io/nicktriller/khcheck-external-secrets
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# -- Mount location for the ExternalSecret template file
+externalSecretTemplatePath: "/external-secret-manifest.yml"
+externalSecretTemplate: |
+  apiVersion: kubernetes-client.io/v1
+  kind: ExternalSecret
+  metadata:
+    name: my-test-secret
+  spec:
+    backendType: vault
+    data:
+      - name: user
+        key: secrets/data/khcheck-external-secrets
+        property: user
+      - name: pass
+        key: secrets/data/khcheck-external-secrets
+        property: password
+# -- The interval that Kuberhealthy will run your check on
+runInterval: "2m"
+# -- After this much time, Kuberhealthy will kill your check and consider it "failed"
+timeout: "3m"
+reportDelay: "6s"
+reportFailure: "false"
+# -- Additional environment variables to pass to the check pod
+extraEnvs: []
+# - name: example
+#   value: example
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: "kuberhealthy-external-secrets-sa"
+
+# -- Check pod annotations
+podAnnotations: {}
+
+# -- Check pod security context
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# -- Check pod container security context
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# -- Check pod resource limits
+resources:
+  limits:
+    cpu: 100m
+    memory: 64Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi

@@ -1,0 +1,23 @@
+name: Publish Helm chart
+on:
+  push:
+    tags:
+     - "helm-[0-9]+.[0-9]+.[0-9]+"
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Chart version from git tag
+        id: chart_version
+        run: |
+          TAG=${GITHUB_REF#refs/*/}
+          echo "TAG is $TAG"
+          CHART_VERSION=${TAG#helm-}
+          echo "CHART_VERSION is $CHART_VERSION"
+          echo "::set-output name=chart_version::$CHART_VERSION"
+      - name: Publish Helm charts
+        uses: stefanprodan/helm-gh-pages@v1.4.1
+        with:
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          chart_version: "${{ steps.chart_version.outputs.chart_version }}"
