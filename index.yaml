@@ -1,0 +1,15 @@
+apiVersion: v1
+entries:
+  khcheck-external-secrets:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2021-03-25T12:56:21.69253631Z"
+    description: An external Kuberhealthy check that checks External Secrets Operator
+      health
+    digest: 18d28b163cf26e85c489bee0ee97ab32517c95faef44c9f8c6946a36e89c4bdf
+    name: khcheck-external-secrets
+    type: application
+    urls:
+    - https://Nick-Triller.github.io/khcheck-external-secrets/khcheck-external-secrets-1.0.0.tgz
+    version: 1.0.0
+generated: "2021-03-25T12:56:21.69192449Z"
