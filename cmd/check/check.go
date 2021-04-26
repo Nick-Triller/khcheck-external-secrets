@@ -123,13 +123,14 @@ func check(done chan struct{}) {
 
 	err := setup()
 	if err != nil {
+		log.Errorf("Setup failed: %v", err)
 		reportFailure("Failed setup", true)
-		log.Fatalf("Setup failed: %v", err)
 	}
 
 	// Cleanup before the check in case there are resources from previous checks.
 	err = cleanup()
 	if err != nil {
+		log.Errorf("Cleanup before check failed: %v", err)
 		reportFailure("Cleanup before check failed", false)
 	}
 	// Wait a few seconds for removal of resources
@@ -139,6 +140,7 @@ func check(done chan struct{}) {
 	log.Infoln("Creating external secret...")
 	_, err = externalSecretsClient.Create(timeout(), externalSecretObject, metav1.CreateOptions{})
 	if err != nil {
+		log.Errorf("Creating ExternalSecret failed: %v", err)
 		reportFailure("Could not create external secret", true)
 	} else {
 		log.Infof("Created ExternalSecret %q.\n", checkConfig.externalSecretName)
@@ -155,6 +157,7 @@ func check(done chan struct{}) {
 	}, backoff.WithMaxRetries(backoffStrategy, 5))
 
 	if err != nil {
+		log.Errorf("Validating operator created matching secret failed: %v", err)
 		reportFailure("Could not validate operator created matching secret", true)
 	}
 
